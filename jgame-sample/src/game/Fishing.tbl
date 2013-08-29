@@ -1,0 +1,20 @@
+// Media Table
+
+// Splash image
+//splash_image	-	0	imagename	-
+
+// Animation sprite sheet
+anim_sheet	munchie-y.gif	0	0	16	16	0	0
+
+// Sprites
+fish_l1	-	0	anim_sheet	0	-
+fish_l2	-	0	anim_sheet	1 	-
+fish_l3	-	0	anim_sheet	2	-
+fish_r1	-	0	anim_sheet	0	x
+fish_r1	-	1	anim_sheet	1	x
+fish_r1	-	2	anim_sheet	2	x
+
+fish_l 	fish_l1;fish_l2;fish_l3	0.3	true
+fish_r 	fish_r1;fish_r2;fish_r3	0.3	true
+
+// Sound
