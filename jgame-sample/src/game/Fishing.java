@@ -10,6 +10,8 @@ public class Fishing extends JGEngine{
 	private double numFishSpawned;
 	private double depthAndWeight;
 	private double directionalTimer=0;
+	JGFont gameFont = new JGFont("Arial",0,20);
+	JGFont textFont = new JGFont("Arial",0,13);
 	
 	public static void main(String[]args){new Fishing(new JGPoint(240,480));}
 	
@@ -34,8 +36,8 @@ public class Fishing extends JGEngine{
 	}
 	
 	public void paintFrameTitle(){
-		drawString("Fishing for Treasure!",pfWidth()/2,20,0);
-		drawString("Press Enter to Begin",pfWidth()/2,40,0);
+		drawString("Fishing for Treasure!",pfWidth()/2,20,0,gameFont,JGColor.white);
+		drawString("Press Enter to Begin",pfWidth()/2,40,0,gameFont,JGColor.white);
 	}
 	
 	/** First Game Mode */
@@ -62,13 +64,13 @@ public class Fishing extends JGEngine{
 	}
 	
 	public void paintFrameFirstMode(){
-		drawString("Current Depth: "+depthAndWeight,pfWidth()/2,20,0);
+		drawString("Current Depth: "+depthAndWeight,pfWidth()/2,10,0,gameFont,JGColor.white);
 	}
 	
 	/** Second Game Mode */
 	public void startSecondMode(){
 		removeObjects(null,0);
-		new JGObject("reel",true,pfWidth()/2,40,1,"ball");
+		new Reel();
 		new HookedFish();
 		gameTime=0;
 	}
@@ -80,7 +82,7 @@ public class Fishing extends JGEngine{
 		if (getKey(KeyEsc)) setGameState("Title");
 		
 		// Cheat
-		if (getKey(KeyEnter)) nextState("End");
+		if (getKey(KeyEnter)) nextState("Win");
 	}
 	
 	public void paintFrameSecondMode(){
@@ -92,13 +94,12 @@ public class Fishing extends JGEngine{
 	}
 	
 	public void doFrameWin(){
-		if (getKey(KeyEsc)||getKey(KeyEnter)) setGameState("Title");
+		if (getKey(KeyEsc)||getKey(KeyEnter)) nextState("Title");
 	}
 	
 	public void paintFrameWin(){
-		drawString("YOU HAVE WON THE FUCKING GAME",pfWidth()/2,40,0);
-		drawString("You caught a "+depthAndWeight+" pound flounder!",pfWidth()/2,60,0);
-		drawString("Press Enter to go back to main menu.",pfWidth()/2,80,0);
+		drawString("You caught a "+depthAndWeight+" pound flounder!",pfWidth()/2,40,0,textFont,JGColor.white);
+		drawString("Press Enter to go back to main menu.",pfWidth()/2,60,0,textFont,JGColor.white);
 	}
 	
 	/** Losing End Mode */
@@ -107,18 +108,18 @@ public class Fishing extends JGEngine{
 	}
 	
 	public void doFrameLose(){
-		if (getKey(KeyEsc)||getKey(KeyEnter)) setGameState("Title");
+		if (getKey(KeyEsc)||getKey(KeyEnter)) nextState("Title");
 	}
 	
 	public void paintFrameLose(){
-		drawString("You have lost the fish!",pfWidth()/2,40,0);
-		drawString("Press Enter to go back to main menu.",pfWidth()/2,80,0);
+		drawString("You have lost the fish!",pfWidth()/2,40,0,textFont,JGColor.white);
+		drawString("Press Enter to go back to main menu.",pfWidth()/2,60,0,textFont,JGColor.white);
 	}
 	
 	/** Player Object */
 	class Hook extends JGObject{
 		Hook(){
-			super("hook",true,pfWidth()/2,30,1,"ball");
+			super("hook",true,pfWidth()/2,30,1,"hook");
 		}
 		
 		public void move(){
@@ -134,6 +135,17 @@ public class Fishing extends JGEngine{
 		}
 	}
 	
+	/** Reel Object */
+	class Reel extends JGObject{
+		Reel(){
+			super("reel",true,pfWidth()/2,40,1,"reel");
+		}
+		public void move(){
+			if (getKey(KeyLeft)||getKey(KeyRight)) setGraphic("reel_c");
+			else setGraphic("reel");  
+		}
+	}
+	
 	/** Hooked Fish Object */
 	class HookedFish extends JGObject{
 		HookedFish(){
@@ -142,12 +154,12 @@ public class Fishing extends JGEngine{
 		}
 		
 		public void move(){
-			if (xspeed<0 && getKey(KeyLeft)) yspeed=-2;
-			else if (xspeed>0 && getKey(KeyRight)) yspeed=-2;
+			if (xspeed<0 && getKey(KeyLeft) && getKey(' ')) yspeed=-3;
+			else if (xspeed>0 && getKey(KeyRight) && getKey(' ')) yspeed=-3;
 			else yspeed=1+depthAndWeight*.005;
 			if ((xspeed<0 && x<16)||(xspeed>0 && x>pfWidth()-16)||(directionalTimer%3==0)||(directionalTimer%5==0)) xspeed=-xspeed;
 			if (xspeed<0) setGraphic("fish_l"); else setGraphic("fish_r");
-			if (y<30) setGameState("Win");
+			if (y<40) setGameState("Win");
 			else if (y>pfHeight()+16) setGameState("Lose");
 		}
 	}
