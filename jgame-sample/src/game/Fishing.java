@@ -10,6 +10,7 @@ public class Fishing extends JGEngine{
 	private double numFishSpawned;
 	private double depthAndWeight;
 	private double directionalTimer=0;
+	private boolean win = false;
 	JGFont gameFont = new JGFont("Arial",0,20);
 	JGFont textFont = new JGFont("Arial",0,13);
 	
@@ -82,37 +83,27 @@ public class Fishing extends JGEngine{
 		if (getKey(KeyEsc)) setGameState("Title");
 		
 		// Cheat
-		if (getKey(KeyEnter)) nextState("Win");
+		if (getKey(KeyEnter)){
+			win=true;
+			nextState("End");
+		}
 	}
 	
 	public void paintFrameSecondMode(){
 	}
 	
-	/** Winning End Mode */
-	public void startWin(){
+	/** End Mode */
+	public void startEnd(){
 		removeObjects(null,0);
 	}
 	
-	public void doFrameWin(){
+	public void doFrameEnd(){
 		if (getKey(KeyEsc)||getKey(KeyEnter)) nextState("Title");
 	}
 	
-	public void paintFrameWin(){
-		drawString("You caught a "+depthAndWeight+" pound flounder!",pfWidth()/2,40,0,textFont,JGColor.white);
-		drawString("Press Enter to go back to main menu.",pfWidth()/2,60,0,textFont,JGColor.white);
-	}
-	
-	/** Losing End Mode */
-	public void startLose(){
-		removeObjects(null,0);
-	}
-	
-	public void doFrameLose(){
-		if (getKey(KeyEsc)||getKey(KeyEnter)) nextState("Title");
-	}
-	
-	public void paintFrameLose(){
-		drawString("You have lost the fish!",pfWidth()/2,40,0,textFont,JGColor.white);
+	public void paintFrameEnd(){
+		if (win) drawString("You caught a "+depthAndWeight+" pound flounder!",pfWidth()/2,40,0,textFont,JGColor.white);
+		else drawString("You have lost the fish!",pfWidth()/2,40,0,textFont,JGColor.white);
 		drawString("Press Enter to go back to main menu.",pfWidth()/2,60,0,textFont,JGColor.white);
 	}
 	
@@ -159,8 +150,13 @@ public class Fishing extends JGEngine{
 			else yspeed=1+depthAndWeight*.005;
 			if ((xspeed<0 && x<16)||(xspeed>0 && x>pfWidth()-16)||(directionalTimer%3==0)||(directionalTimer%5==0)) xspeed=-xspeed;
 			if (xspeed<0) setGraphic("fish_l"); else setGraphic("fish_r");
-			if (y<40) setGameState("Win");
-			else if (y>pfHeight()+16) setGameState("Lose");
+			if (y<40){
+				win=true;
+				setGameState("End");
+			}
+			else if (y>pfHeight()+16){
+				setGameState("End");
+			}
 		}
 	}
 	
