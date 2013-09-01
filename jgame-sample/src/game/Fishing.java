@@ -2,70 +2,138 @@ package game;
 import jgame.*;
 import jgame.platform.*;
 
+import java.lang.Math;
+
 public class Fishing extends JGEngine{
+	
+	private double gameTime=0;
+	private double numFishSpawned=0;
+	private double depth=0;
+	
 	public static void main(String[]args){new Fishing(new JGPoint(240,480));}
 	
 	/** Application constructor. */
 	public Fishing(JGPoint size){initEngine(size.x,size.y);}
-	
-	/** Applet constructor. */
-	public Fishing(){initEngineApplet();}
+//	/** Applet constructor. */
+//	public Fishing(){initEngineApplet();}
 
 	public void initCanvas(){setCanvasSettings(15,30,16,16,null,JGColor.blue,null);}
 
 	public void initGame(){
 		setFrameRate(35,2);
-		//defineMedia("Fishing.tbl");
-		//defineImage("hook","-",0,"ball20-red.gif","-");
+		defineMedia("Fishing.tbl");
+		setGameState("Title");
+	}
+	
+	/** Title Screen */
+	public void startTitle(){
+		removeObjects(null,0);
+	}
+	
+	public void doFrameTitle(){
+		if (getKey(KeyEnter)) nextState("FirstMode");
+	}
+	
+	public void paintFrameTitle(){
+		drawString("Fishing for Treasure!",pfWidth()/2,20,0);
+		drawString("Press Enter to Begin",pfWidth()/2,40,0);
+	}
+	
+	/** First Game Mode */
+	public void startFirstMode(){
 		new Hook();
-		for (int i=0; i<10; i++)
-			new Fish(Fishing.this.random(0,pfWidth()),Fishing.this.random(0, pfHeight()));
 	}
 	
-	public void doFrame(){
+	public void doFrameFirstMode(){
+		gameTime++;
+		depth=gameTime/2;
 		moveObjects();
-		//checkCollision(1,2);
+		checkCollision(2,1);
+		double scaleSpeed = -3+gameTime*-.002;
+		if (Math.pow(gameTime/35,1.5)>=numFishSpawned){
+			new JGObject("fish",true,random(8,pfWidth()-8),pfHeight(),2,"fish_u",0,scaleSpeed,-3);
+			numFishSpawned++;
+		}
+		if (getKey(KeyEsc)) setGameState("Title");
+		
+		// Cheat
+		if (getKey(KeyEnter)) nextState("SecondMode");
 	}
 	
-	public void paintFrame(){
+	public void paintFrameFirstMode(){
+		drawString("Current Depth: "+depth,pfWidth()/2,20,0);
 	}
 	
+	/** Second Game Mode */
+	public void startSecondMode(){
+		removeObjects(null,0);
+		new JGObject("reel",true,pfWidth()/2,40,1,"ball");
+		new HookedFish();
+	}
+	
+	public void doFrameSecondMode(){
+		moveObjects();
+		if (getKey(KeyEsc)) setGameState("Title");
+		if (getKey(KeyEnter)) nextState("End");
+	}
+	
+	public void paintFrameSecondMode(){
+	}
+	
+	/** End Mode */
+	public void startEnd(){
+		removeObjects(null,0);
+	}
+	
+	public void doFrameEnd(){
+		moveObjects();
+		if (getKey(KeyEsc)) setGameState("Title");
+	}
+	
+	public void paintFrameEnd(){
+		drawString("YOU HAVE WON THE FUCKING GAME",pfWidth()/2,40,0);
+		drawString("You caught a "+depth+" pound flounder!",pfWidth()/2,60,0);
+	}
+	
+	/** Player Object */
 	class Hook extends JGObject{
 		Hook(){
-			super("hook",true,pfWidth()/2,10,1,null);
-			yspeed=2;
+			super("hook",true,pfWidth()/2,30,1,"ball");
 		}
 		
-		public void paint(){
-			setColor(JGColor.black);
-			drawOval(x,y,16,16,true,true);
-		}
-
 		public void move(){
-			if (getKey(KeyLeft) && getKey(KeyRight)) xspeed=0;
-			else if (getKey(KeyLeft)) xspeed=-2;
-			else if (getKey(KeyRight)) xspeed=2;
+			if (getKey(KeyLeft)&& !getKey(KeyRight)) xspeed=-2;
+			else if (getKey(KeyRight)&& !getKey(KeyLeft)) xspeed=2;
+			else xspeed=0;
+			if (getKey(KeyDown)) xspeed=xspeed*2; // Cheat
 			if ((x>pfWidth()-8 && xspeed>0)||(x<8 && xspeed<0)) xspeed=0;
-			if (y>pfHeight()-16 && yspeed>0) 	yspeed=0;
+		}
+		
+		public void hit(JGObject obj){
+			setGameState("SecondMode");
 		}
 	}
 	
-	class Fish extends JGObject{
-		Fish(double x, double y){
-			super("fish",true,x,y,2,null);
-			x=random(-1,1);
-			if (x>0) xspeed=y*.01;
-			else if (x<0) xspeed=y*-.01;
-		}
-		
-		public void paint(){
-			setColor(JGColor.red);
-			drawOval(x,y,y*.07,y*.07,true,true);
+	/** Hooked Fish Object */
+	class HookedFish extends JGObject{
+		HookedFish(){
+			super("hookedFish",true,pfWidth()/2,pfHeight()-32,2,"fish_r");
+			xspeed=random(-1,1);
 		}
 		
 		public void move(){
-			if ((x > pfWidth()-8 && xspeed>0) || x <8 && xspeed<0) xspeed=-xspeed;	
+			if (xspeed<0 && getKey(KeyLeft)) yspeed=-2;
+			else if (xspeed>0 && getKey(KeyRight)) yspeed=-2;
+			else yspeed=1;
+			if (xspeed<0 && x<16) xspeed=-xspeed;
+			else if (xspeed>0 && x>pfWidth()-16) xspeed=-xspeed;
+			if (xspeed<0) setGraphic("fish_l"); else setGraphic("fish_r");
+			if (y<30) setGameState("End");
 		}
-		
+	}
+	
+	public void nextState(String stateName){
+		clearKey(KeyEnter);
+		setGameState(stateName);
 	}
 }

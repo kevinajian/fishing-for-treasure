@@ -77,6 +77,10 @@ public class Example4 extends JGEngine {
 			xspeed = random(-2,2);
 			yspeed = random(-2,2);
 		}
+		public void paint(){
+			setColor(JGColor.black);
+			drawOval(x,y,16,16,true,true);
+		}
 
 		/** Update the object. This method is called by moveObjects. */
 		public void move() {

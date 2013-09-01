@@ -1,19 +1,19 @@
-// Media Table
-
-// Splash image
-//splash_image - 0 imagename -
-
-// Animation sprite sheet
-anim_sheet	munchie-r.gif	0	0	16	16	0	0
+anim_sheet	munchie-y.gif	0	0	16	16	0	0
 
 fish_l1	-	0	anim_sheet	0	-
-fish_l2	-	0	anim_sheet	1 	-
+fish_l2	-	0	anim_sheet	1	-
 fish_l3	-	0	anim_sheet	2	-
 fish_r1	-	0	anim_sheet	0	x
-fish_r1	-	1	anim_sheet	1	x
-fish_r1	-	2	anim_sheet	2	x
+fish_r2	-	0	anim_sheet	1	x
+fish_r3	-	0	anim_sheet	2	x
+fish_u1	-	0	anim_sheet	0	r
+fish_u2	-	0	anim_sheet	1	r
+fish_u3	-	0	anim_sheet	2	r
+ball	-	0	ball20-red.gif	-
+splash_image	-	0	splash.gif	-
 
-fish_l 		fish_l1;fish_l2;fish_l3	0.3	true
-fish_r 		fish_r1;fish_r2;fish_r3	0.3	true
 
-// Sound
+
+fish_l	fish_l1;fish_l2;fish_l3	0.3	true
+fish_r	fish_r1;fish_r2;fish_r3	0.3	true
+fish_u	fish_u1;fish_u2;fish_u3	0.3	true
