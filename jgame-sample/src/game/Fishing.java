@@ -11,6 +11,7 @@ public class Fishing extends JGEngine{
 	private double depthAndWeight;
 	private double directionalTimer=0;
 	private boolean win = false;
+	private boolean noFish = false;
 	JGFont gameFont = new JGFont("Arial",0,20);
 	JGFont textFont = new JGFont("Arial",0,13);
 	
@@ -54,10 +55,12 @@ public class Fishing extends JGEngine{
 		moveObjects();
 		checkCollision(2,1);
 		double scaleSpeed = -3+gameTime*-.002;
-		if (Math.pow(gameTime/35,1.5)>=numFishSpawned){
+		if (noFish) removeObjects("fish",2);
+		if (Math.pow(gameTime/35,1.5)>=numFishSpawned && !noFish){
 			new JGObject("fish",true,random(8,pfWidth()-8),pfHeight(),2,"fish_u",0,scaleSpeed,-3);
 			numFishSpawned++;
 		}
+		if (getKey(' ')) noFish=true;
 		if (getKey(KeyEsc)) setGameState("Title");
 		
 		// Cheat
@@ -145,9 +148,11 @@ public class Fishing extends JGEngine{
 		}
 		
 		public void move(){
-			if (xspeed<0 && getKey(KeyLeft) && getKey(' ')) yspeed=-3;
-			else if (xspeed>0 && getKey(KeyRight) && getKey(' ')) yspeed=-3;
-			else yspeed=1+depthAndWeight*.005;
+			if ((xspeed<0 && getKey(KeyLeft) && !getKey(KeyRight))||(xspeed>0 && getKey(KeyRight) && !getKey(KeyLeft))){
+				yspeed=-.02;
+				if (getKey(' ')) yspeed=-2; // Cheat
+			}
+			else yspeed=1+depthAndWeight*.01;
 			if ((xspeed<0 && x<16)||(xspeed>0 && x>pfWidth()-16)||(directionalTimer%3==0)||(directionalTimer%5==0)) xspeed=-xspeed;
 			if (xspeed<0) setGraphic("fish_l"); else setGraphic("fish_r");
 			if (y<40){
