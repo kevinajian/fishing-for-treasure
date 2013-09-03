@@ -6,7 +6,7 @@ Genre: Sports
  
 Goal: Catch the biggest fish you can. The longer you last, the bigger and faster the fish are, making the catch worth more.
 
-Basic Mechanics: You can move the hook left and right, and sinks at a constant rate. The fish move towards the hook, and the first fish you run into with the hook is the fish you attempt to catch. Try to avoid fish to get to deeper depths where the larger fish are.
+Basic Mechanics: You can move the hook left and right, and sinks at a constant rate. The fish move towards the hook, and the first fish you run into with the hook is the fish you attempt to catch. Try to avoid fish to get to deeper depths where the larger fish are. Also, boots will randomly appear. If you hit a boot, you lose your bait and don't catch anything, losing the game.
 
 After touching the fish with the hook, the game switches modes to the second mode, with the goal of securing the catch. The fish will move away from the hook, and will randomly move left and right. You can spin the reel left and right as well while constantly pressing space, and reeling in direction of the fish will pull the fish towards Mikey.
  
@@ -17,7 +17,7 @@ While in the first mode, press space to prevent fish from spawning.
 Also, holding the down arrow makes the hook move faster.
 Press Enter to automatically catch a fish at the current depth.
 
-While in the second mode, hold down the space bar to reel the fish in faster.
-Press Enter to automatically successfully reel the fish in.
+While in the second mode, press shift to automatically reel the fish in.
+Press Enter to successfully reel the fish in.
 
 Press Escape at any time to go back to the Title screen.

@@ -1,9 +1,12 @@
+// Import Graphics
 anim_sheet	gamesprites.gif	0	0	16	16	0	0
 
+// Assign Graphics
 fish_u	-	0	anim_sheet	0	r
 fish_l	-	0	anim_sheet	0	-
 fish_r	-	0	anim_sheet	0	x
 hook	-	0	anim_sheet	3	-
+boot	-	0	anim_sheet	4	-
 reel	-	0	anim_sheet	1	-
 reel_c1	-	0	anim_sheet	1	-
 reel_c2	-	0	anim_sheet	2	-
@@ -13,16 +16,7 @@ reel_c5	-	0	anim_sheet	1	u
 reel_c6	-	0	anim_sheet	2	u
 reel_c7	-	0	anim_sheet	1	l
 reel_c8	-	0	anim_sheet	2	l
-reel_cc1	-	0	anim_sheet	1	-
-reel_cc2	-	0	anim_sheet	2	-
-reel_cc3	-	0	anim_sheet	1	l
-reel_cc4	-	0	anim_sheet	2	l
-reel_cc5	-	0	anim_sheet	1	u
-reel_cc6	-	0	anim_sheet	2	u
-reel_cc7	-	0	anim_sheet	1	r
-reel_cc8	-	0	anim_sheet	2	r
 splash_image	-	0	splash.gif	-
 
-
-reel_c	reel_c1;reel_c2;reel_c3;reel_c4;reel_c5;reel_c6;reel_c7;reel_c8				0.05	false
-reel_cc	reel_cc1;reel_cc2;reel_cc3;reel_cc4;reel_cc5;reel_cc6;reel_cc7;reel_cc8 	0.05 	true
+// Animate Reel
+reel_c	reel_c1;reel_c2;reel_c3;reel_c4;reel_c5;reel_c6;reel_c7;reel_c8	0.05	false
