@@ -11,14 +11,20 @@ public class Fishing extends JGEngine{
 	private double directionalTimer;
 	private String win;
 	private boolean noFishAndBootCheat = false;
-	// Magic Numbers :) 
-	private double frameRate;
-	private double halfWidth;
-	private double margin;
-	private int titleSpaceAndSize = 20;
-	private int lineSpaceAndSize = 13;
+	// Initializing Magic Numbers
+	private double frameRate = 35;
+	private double frameSkip = 2;
 	private static int displayWidth = 240;
 	private static int displayHeight = 480;
+	private int refreshBackground = 240;
+	private static int canvasWidth = 15;
+	private static int canvasHeight = 30;
+	private static int spriteSize = 16;
+	private int half = 2;
+	private double halfWidth;
+	private double margin = 16;
+	private int titleSpaceAndSize = 20;
+	private int lineSpaceAndSize = 13;
 	private int playerCID = 1;
 	private int bootCID = 3;
 	private int fishCID = 4;
@@ -26,6 +32,24 @@ public class Fishing extends JGEngine{
 	private final int secondLine = 2;
 	private final int thirdLine = 3;
 	private final int fourthLine = 4;
+	// First Mode Magic Numbers
+	private int spawnHeightBoundary = 200;
+	private double scaleSpeed = -.002;
+	private int firstModeExpiry = -3; // Objects expire when off view
+	private double yFishSpeed = -2.5;
+	private double fishSpawnRatePower = 1.1;
+	private int bootSpawnRate = 4;
+	private double bootSpeed = -1.5;
+	private int scaleGameTime = 2;
+	// Second Mode Magic Numbers
+	private int shiftReelYPosition = 4;
+	// End Mode Magic Numbers
+	private int scoreMargin = 3;
+	private int leftWinPhraseScale = 5;
+	private int rightWinPhraseScale = 4;
+	private double leftWinPhraseOffset = displayWidth/leftWinPhraseScale;
+	private double rightWinPhraseOffset = rightWinPhraseScale*displayWidth/leftWinPhraseScale;
+	
 	
 	JGFont gameFont = new JGFont("Arial",0,titleSpaceAndSize);
 	JGFont textFont = new JGFont("Arial",0,lineSpaceAndSize);	
@@ -36,17 +60,12 @@ public class Fishing extends JGEngine{
 	public Fishing(JGPoint size){initEngine(size.x,size.y);}
 	
 	public void initCanvas(){
-		int canvasWidth = 15;
-		int canvasHeight = 30;
-		int spriteSize = 16;
-		int half = 2;
 		setCanvasSettings(canvasWidth,canvasHeight,spriteSize,spriteSize,null,JGColor.blue,null);
 		halfWidth=pfWidth()/half;
 		margin=16;
 	}
 
 	public void initGame(){
-		frameRate=35; int frameSkip=2;
 		setFrameRate(frameRate,frameSkip);
 		defineMedia("Fishing.tbl");
 		setBGImage("fixedBackground");
@@ -76,34 +95,29 @@ public class Fishing extends JGEngine{
 		gameTime++;
 		moveObjects();
 		checkCollision(bootCID+fishCID,playerCID);
-		// Magic Numbers
-		int heightBoundary = 200;
-		double scaleSpeed = -.002;
-		int firstModeExpiry = -3; // Objects expire when off view
-		double yFishSpeed = -2.5;
 		double xScaledFishSpeed = yFishSpeed+gameTime*scaleSpeed;
-		double fishSpawnRatePower = 1.1;
 		double fishSpawnRate = Math.pow(gameTime/frameRate, fishSpawnRatePower);
-		int bootSpawnRate = 4;
-		double bootSpeed = -1.5;
 		double scaledBootSpeed = bootSpeed+gameTime*scaleSpeed;
-		int refreshBackground = 240;
 		if (gameTime%refreshBackground==0) new aBackground(0,pfHeight()); // Create new scrolling background
-		if (fishSpawnRate>=numFishSpawned && !noFishAndBootCheat){ // Randomly spawn fish from the left and right, boots from the bottom
-			new Fish(0,random(heightBoundary,pfHeight()),"fish_l",-xScaledFishSpeed,yFishSpeed,firstModeExpiry);
-			new Fish(pfWidth(),random(heightBoundary,pfHeight()),"fish_r",-xScaledFishSpeed,yFishSpeed,firstModeExpiry);
+		if (fishSpawnRate>=numFishSpawned){ // Randomly spawn fish from the left and right, boots from the bottom
 			numFishSpawned++;
-			if (numFishSpawned%bootSpawnRate==0) new JGObject("boot",true,random(0,pfWidth()),pfHeight(),bootCID,"boot",0,scaledBootSpeed,firstModeExpiry);
+			if (!noFishAndBootCheat){
+				new Fish(0,random(spawnHeightBoundary,pfHeight()),"fish_l",-xScaledFishSpeed,yFishSpeed,firstModeExpiry);
+				new Fish(pfWidth(),random(spawnHeightBoundary,pfHeight()),"fish_r",-xScaledFishSpeed,yFishSpeed,firstModeExpiry);
+				if (numFishSpawned%bootSpawnRate==0) new JGObject("boot",true,random(0,pfWidth()),pfHeight(),bootCID,"boot",0,scaledBootSpeed,firstModeExpiry);
+			}
 		}
 		// Cheats
 		if (noFishAndBootCheat) {removeObjects("fish",fishCID); removeObjects("boot",bootCID);}
-		if (getKey(' ')) noFishAndBootCheat=!noFishAndBootCheat;
+		if (getKey(' ')) {
+			noFishAndBootCheat=!noFishAndBootCheat;
+			clearKey(' '); // Prevent it from toggling multiple times from one press
+		}
 		checkEscape();
 		if (getKey(KeyEnter)) nextState("StartSecondMode");
 	}
 	
 	public void paintFrameFirstMode(){
-		int scaleGameTime = 2;
 		depthAndWeight=gameTime/scaleGameTime;
 		drawString("Current Depth: "+depthAndWeight,halfWidth,lineSpaceAndSize,0,gameFont,JGColor.white);
 	}
@@ -123,9 +137,7 @@ public class Fishing extends JGEngine{
 
 	/** In Second Game Mode */
 	public void startInSecondMode(){
-		int shiftYPosition = 4;
-		int secondLine = 2;
-		new JGObject("reel",true,halfWidth-shiftYPosition,titleSpaceAndSize*secondLine,playerCID,"reel_c");
+		new JGObject("reel",true,halfWidth-shiftReelYPosition,titleSpaceAndSize*secondLine,playerCID,"reel_c");
 		new HookedFish();
 		new JGObject("fixedBackground",true,0,0,0,"fixedBackground");
 		gameTime=0;
@@ -158,15 +170,10 @@ public class Fishing extends JGEngine{
 	}
 	
 	public void paintFrameEnd(){
-		int scoreMargin = 3;
-		int five = 5;
-		int four = 4;
-		double fifthWidth = displayWidth/five;
-		double fourFifthWidth = 4*displayWidth/five;
 		if (win.equals("yes")) {
-			drawString("You caught a: ",fifthWidth+scoreMargin,titleSpaceAndSize*secondLine,0,textFont,JGColor.white);
+			drawString("You caught a: ",leftWinPhraseOffset+scoreMargin,titleSpaceAndSize*secondLine,0,textFont,JGColor.white);
 			drawString(""+depthAndWeight,halfWidth,titleSpaceAndSize*secondLine-scoreMargin,0,gameFont,JGColor.white);
-			drawString(" pound bass!",fourFifthWidth-scoreMargin,titleSpaceAndSize*secondLine,0,textFont,JGColor.white);
+			drawString(" pound bass!",rightWinPhraseOffset-scoreMargin,titleSpaceAndSize*secondLine,0,textFont,JGColor.white);
 		}
 		else if (win.equals("no")) drawString("You lost the fish!",halfWidth,titleSpaceAndSize*secondLine,0,gameFont,JGColor.white);
 		else drawString("You hit a boot!",halfWidth,titleSpaceAndSize*secondLine,0,gameFont,JGColor.white);
@@ -178,26 +185,26 @@ public class Fishing extends JGEngine{
 		private final static int backgroundExpiry = -3;
 		private final static double yspeed = -2;
 		aBackground(int x, int y){
-			
 			super("abackground",true,x,y,0,"background",0,yspeed,backgroundExpiry);
 		}
 	}
 	
 	/** Player Object */
 	class Hook extends JGObject{
+		private double hookSpeed = 3;
 		private final static int hookHeight = 40;
+		private double cheatSpeedScale = 2;
 		Hook(){
 			super("hook",true,halfWidth-margin,hookHeight,playerCID,"hook");
 		}
 		
 		public void move(){
-			double hookSpeed = 3;
 			if (getKey(KeyLeft) && !getKey(KeyRight)) xspeed=-hookSpeed;
 			else if (getKey(KeyRight) && !getKey(KeyLeft)) xspeed=hookSpeed;
 			else xspeed=0;
 			if ((x>pfWidth()-margin && xspeed>0)||(x<margin && xspeed<0)) xspeed=0;
 			// Cheat
-			double cheatSpeed = xspeed*2;
+			double cheatSpeed = xspeed*cheatSpeedScale;
 			if (getKey(KeyDown)) xspeed=cheatSpeed;
 		}
 		
@@ -226,20 +233,24 @@ public class Fishing extends JGEngine{
 	
 	/** Hooked Fish Object */
 	class HookedFish extends JGObject{
-		private final int hookedFishHeight = displayHeight - titleSpaceAndSize*fourthLine;
+		private int rangeOfSpeed = 2;
+		private double hookedSpeed = -.02;
+		private double reelSpeed = -7;
+		private double baseEscapeSpeed = 1;
+		private double escapeSpeedScale = .005; 
+		private int rangeOfFirstTurnMin = 4; 
+		private int rangeOfFirstTurnMax = 6; 
+		private int rangeOfSecondTurnMin = 7; 
+		private int rangeOfSecondTurnMax = 9;
+		
 		HookedFish(){
 			super("hookedFish",true,halfWidth,pfHeight()-titleSpaceAndSize*fourthLine,fishCID,"fish_r");
-			int rangeOfSpeed = 2;
 			xspeed=random(-rangeOfSpeed,rangeOfSpeed);
 		}
 		
-		public void move(){
-			double hookedSpeed = -.02; 
-			double reelSpeed = -7; 
-			double baseEscapeSpeed = 1; 
-			double escapeSpeedScale = .005; 
+		public void move(){		
 			double escapeSpeed = baseEscapeSpeed+depthAndWeight*escapeSpeedScale;
-			int rangeOfFirstTurnMin = 4; int rangeOfFirstTurnMax = 6; int rangeOfSecondTurnMin = 7; int rangeOfSecondTurnMax = 9;
+			final int hookedFishHeight = displayHeight - titleSpaceAndSize*fourthLine;
 			int turnTimer1 = (int)(Math.floor(random(rangeOfFirstTurnMin,rangeOfFirstTurnMax))); // Randomize when the fish changes direction
 			int turnTimer2 = (int)(Math.floor(random(rangeOfSecondTurnMin,rangeOfSecondTurnMax)));
 			if (getKey(KeyShift)) yspeed= reelSpeed; // Cheat
@@ -270,7 +281,7 @@ public class Fishing extends JGEngine{
 	
 	// Cheat
 	public void nextState(String stateName){
-		clearKey(KeyEnter);
+		clearKey(KeyEnter); // Prevent it from changing states multiple times from one press
 		removeObjects(null,0);
 		setGameState(stateName);
 	}
