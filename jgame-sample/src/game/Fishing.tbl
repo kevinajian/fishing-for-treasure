@@ -16,7 +16,11 @@ reel_c5	-	0	anim_sheet	1	u
 reel_c6	-	0	anim_sheet	2	u
 reel_c7	-	0	anim_sheet	1	l
 reel_c8	-	0	anim_sheet	2	l
-splash_image	-	0	splash.gif	-
+splash_image	-	0	fixedBackground.gif	-
+background	-	0	background.gif	-
+fixedBackground	-	0	fixedBackground.gif	-
+reelBackground	-	0	reelBackground.gif	-
+titleBackground	-	0	titleBackground.gif	-
 
 // Animate Reel
 reel_c	reel_c1;reel_c2;reel_c3;reel_c4;reel_c5;reel_c6;reel_c7;reel_c8	0.05	false
