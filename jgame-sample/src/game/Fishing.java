@@ -5,13 +5,14 @@ import jgame.platform.*;
 import java.lang.Math;
 
 public class Fishing extends JGEngine{
+	// Values to track across game states (since they don't take
 	private double gameTime;
 	private double numFishSpawned;
 	private double depthAndWeight;
 	private double directionalTimer;
 	private String win;
 	private boolean noFishAndBootCheat = false;
-	// Initializing Magic Numbers
+	// Initialization Magic Numbers
 	private double frameRate = 35;
 	private double frameSkip = 2;
 	private static int displayWidth = 240;
@@ -174,7 +175,7 @@ public class Fishing extends JGEngine{
 			drawString("You caught a: ",leftWinPhraseOffset+scoreMargin,titleSpaceAndSize*secondLine,0,textFont,JGColor.white);
 			drawString(""+depthAndWeight,halfWidth,titleSpaceAndSize*secondLine-scoreMargin,0,gameFont,JGColor.white);
 			drawString(" pound bass!",rightWinPhraseOffset-scoreMargin,titleSpaceAndSize*secondLine,0,textFont,JGColor.white);
-		}
+		}  
 		else if (win.equals("no")) drawString("You lost the fish!",halfWidth,titleSpaceAndSize*secondLine,0,gameFont,JGColor.white);
 		else drawString("You hit a boot!",halfWidth,titleSpaceAndSize*secondLine,0,gameFont,JGColor.white);
 		drawString("Press Enter to go back to main menu.",halfWidth,titleSpaceAndSize*fourthLine,0,textFont,JGColor.white);
